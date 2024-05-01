@@ -3,6 +3,8 @@
 	<ResultsDirectory>.\TestResults</ResultsDirectory>
 	<TestRunParameters>
 		<Parameter name="webAppUrl" value="https://todomvc.com/examples/react/dist/" />
+		<Parameter name="browser" value="edge" />
+		
 	</TestRunParameters>
 	<!-- Configuration for loggers -->
 	<LoggerRunSettings>

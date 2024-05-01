@@ -1,69 +1,28 @@
 ﻿using AventStack.ExtentReports;
-using AventStack.ExtentReports.Gherkin.Model;
-using AventStack.ExtentReports.Reporter;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using System.Diagnostics.Metrics;
 using TodoMVC.Pages;
+using TodoMVC.Utilities;
 
 namespace TodoMVC.Tests;
 
 [TestFixture(TestName = "ToDo App")]
-public class ToDosTest : IDisposable
+public class ToDosTest : BaseTests
 {
-    private WebDriver _driver;
     private ToDoPage _toDoPage;
-    private string Url;
-    private ChromeOptions chromeOptions;
-
-    private ExtentReports _extent;
-    private ExtentTest _test;
-
-    private string _reportFolderPath;
-    private string _screenshotFolderPath;
 
     public ToDosTest()
     {
-        Url = TestContext.Parameters["webAppUrl"] ?? string.Empty;
-
-        // Initializing the chromeoption.
-        chromeOptions = new ChromeOptions();
-
-        //Iinitializing the driver and maximize the window
-        _driver = new ChromeDriver(chromeOptions);
-        _driver.Manage().Window.Maximize();
-
         //Initializing the pages
-        _toDoPage = new ToDoPage(_driver);
-
-        // Create a report folder if it doesn't exist
-        _reportFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\TestResults");
-        if (!Directory.Exists(_reportFolderPath))
-        {
-            Directory.CreateDirectory(_reportFolderPath);
-        }
-
-        // Create a screenshots folder if it doesn't exist
-        _screenshotFolderPath = Path.Combine(_reportFolderPath, "..\\..\\TestResults\\Screenshots");
-        if (!Directory.Exists(_screenshotFolderPath))
-        {
-            Directory.CreateDirectory(_screenshotFolderPath);
-        }
-
-        var htmlReporter = new ExtentSparkReporter(Path.Combine("..\\..\\TestResults", "extent-report.html"));
-        _extent = new ExtentReports();
-        _extent.AttachReporter(htmlReporter);
-
-        _test = _extent.CreateTest(TestContext.CurrentContext.Test.Name);
+        _toDoPage = new ToDoPage(Driver);
     }
 
-
+    /// <summary>
+    /// Navigate to the ToDo web page.
+    /// </summary>
     [Test, Order(1)]
     public void NavigateToThePage()
     {
-
         //Arrange
-        var url = Url;
+        var url = BaseUrl;
         var expectedTitle = "TodoMVC: React";
 
         try
@@ -73,25 +32,34 @@ public class ToDosTest : IDisposable
 
             //Assert
             Assert.That(_toDoPage.GetPageTitle(), Is.EqualTo(expectedTitle));
-            _test.Log(Status.Pass, "Successfully navigated to the page.");
-            _test.Log(Status.Info, $"Page Title: {expectedTitle}");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Successfully navigated to the page.");
+            Test.Log(Status.Info, $"Page Title: {expectedTitle}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
 
     }
 
+    /// <summary>
+    /// Add new ToDos to the system.
+    /// </summary>
     [Test, Order(2)]
     public void AddNewToDos()
     {
-
         //Arrange
         var toDoText = new List<string>()
         {
@@ -109,18 +77,28 @@ public class ToDosTest : IDisposable
 
             //Assert
             Assert.That(toDoText, Is.EqualTo(result));
-            _test.Log(Status.Pass, "Successfully added to dos.");
-            _test.Log(Status.Info, $"Added ToDos: <br>{string.Join("<br>", result)}");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Successfully added to dos.");
+            Test.Log(Status.Info, $"Added ToDos: <br>{string.Join("<br>", result)}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
     }
 
+    /// <summary>
+    /// Change ToDos status of a selected ToDos to "Completed".
+    /// </summary>
     [Test, Order(3)]
     public void SelectToDosAsCompletedInAll()
     {
@@ -138,20 +116,30 @@ public class ToDosTest : IDisposable
 
             //Assert
             Assert.That(toDoListToToggle.Count, Is.EqualTo(result.Count));
-            _test.Log(Status.Pass, "Successfully completed to dos.");
-            _test.Log(Status.Info, $"Completed ToDos: <br>{string.Join("<br>", result)}");
-            _test.Log(Status.Info, $"Completed ToDos Count: {result.Count}");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Successfully completed to dos.");
+            Test.Log(Status.Info, $"Completed ToDos: <br>{string.Join("<br>", result)}");
+            Test.Log(Status.Info, $"Completed ToDos Count: {result.Count}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
 
     }
 
+    /// <summary>
+    /// Check completed ToDos in Completed tab. 
+    /// </summary>
     [Test, Order(4)]
     public void VerifyCompletedToDosInCompletedTab()
     {
@@ -170,21 +158,31 @@ public class ToDosTest : IDisposable
 
             // Assert
             Assert.That(toDoListToToggle.Count, Is.EqualTo(result.Count));
-            _test.Log(Status.Pass, "Successfully verified completed to dos in completed tab.");
-            _test.Log(Status.Info, $"Completed ToDos: <br>{string.Join("<br>", result)}");
-            _test.Log(Status.Info, $"Completed ToDos Count: {result.Count}");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Successfully verified completed to dos in completed tab.");
+            Test.Log(Status.Info, $"Completed ToDos: <br>{string.Join("<br>", result)}");
+            Test.Log(Status.Info, $"Completed ToDos Count: {result.Count}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
 
 
     }
 
+    /// <summary>
+    /// Verify Edit function.
+    /// </summary>
     [Test, Order(5)]
     public void VerifyEditFuction()
     {
@@ -201,19 +199,29 @@ public class ToDosTest : IDisposable
 
             // Assert. 
             Assert.That(result.Count(x => x == newToDoValue), Is.EqualTo(1));
-            _test.Log(Status.Pass, "Successfully Edited.");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Successfully Edited.");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
 
     }
 
+    /// <summary>
+    /// Negative Scenario - Add Empty value as a ToDo. 
+    /// </summary>
     [Test, Order(6)]
     public void VerifyEnterEmptyValue()
     {
@@ -236,18 +244,28 @@ public class ToDosTest : IDisposable
 
             //Assert.
             Assert.That(beforeCount, Is.EqualTo(afterCount));
-            _test.Log(Status.Pass, "Empty value is not added to the list");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Empty value is not added to the list");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
 
     }
 
+    /// <summary>
+    ///  Change ToDos' status from Complete to active.
+    /// </summary>
     [Test, Order(7)]
     public void VerifyChangeCompletedToActiveToDos()
     {
@@ -260,46 +278,67 @@ public class ToDosTest : IDisposable
 
             // Assert
             Assert.That(result.Count, Is.EqualTo(0));
-            _test.Log(Status.Pass, "No Completed ToDos in the completed tab");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "No Completed ToDos in the completed tab");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
     }
 
+    /// <summary>
+    /// Negative Scenario - Verify "Clear Completed" button clear Active ToDos.
+    /// </summary>
     [Test, Order(8)]
     public void VerifyClearCompletedButtonIfClearActiveToDos()
     {
         try
         {   // Act.
 
-            // Get the count of ToDos in the list before click clear completed button.
+            // Get the count of active ToDos in the list before click clear completed button.
+            _toDoPage.ClickActiveTab();
             var beforeCount = _toDoPage.GetAvailableToDoListInSelectedTab().Count();
             _toDoPage.CickClearCompleted();
 
-            // Get the count of ToDos in the list After click clear completed button.
+            // Get the count of active ToDos in the list After click clear completed button.
             var afterCount = _toDoPage.GetAvailableToDoListInSelectedTab().Count();
-            _toDoPage.ClickAllTab();
+
 
             // Assert
             Assert.That(beforeCount, Is.EqualTo(afterCount));
-            _test.Log(Status.Pass, "No completed Items to clear and Active ToDos are not cleared.");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "Active ToDos are not cleared.");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
     }
 
+    /// <summary>
+    /// Negative scenario - Edit a selected ToDo with empty value
+    /// </summary>
     [Test, Order(9)]
     public void VerifyEditFuctionWithEmptyValue()
     {
@@ -314,42 +353,61 @@ public class ToDosTest : IDisposable
             _toDoPage.EditSelectedToDo(selectedToDo, newToDoValue);
             _toDoPage.ClickAllTab();
             var result = _toDoPage.GetAvailableToDoListInSelectedTab();
-            
+
 
             // Assert. 
             Assert.That(result.Count(x => x == selectedToDo), Is.EqualTo(1));
-            _test.Log(Status.Pass, "ToDo is not updated with an empty value");
-            _test.Log(Status.Info, "Screenshot", MediaEntityBuilder
-                .CreateScreenCaptureFromPath(CaptureScreenshot()).Build());
+            Test.Log(Status.Pass, "ToDo is not updated with an empty value");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
         }
         catch (AssertionException ex)
         {
-            _test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
 
     }
 
-    public void Dispose()
+    /// <summary>
+    /// Negative scenario - Verify ToDos Count get completed ToDos count as well. 
+    /// </summary>
+    [Test, Order(10)]
+    public void VerifyToDoCountDisplaysForCompletedToDos()
     {
-        _test.Log(Status.Info, "Test completed");
-        _test.AddScreenCaptureFromPath(CaptureScreenshot());
-        _extent.Flush();
-        _driver.Dispose();
-    }
+        try
+        {
+            // Act.
+            _toDoPage.ClickActiveTab();
+            _toDoPage.ChangeToDoStatusInSelectedTab();
+            var result = _toDoPage.GetActiveToDosCount();
 
-    private string CaptureScreenshot()
-    {
-        // Set screenshot file name with timestamp.
+            // Assert.
+            Assert.That(result, Is.EqualTo(0));
+            Test.Log(Status.Pass, "Count is displaaying as 0.");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
-        string screenshotFileName = $"screenshot_{DateTime.Now:yyyyMMddHHmmssfff}.png";
-        string screenshotPath = Path.Combine(_screenshotFolderPath, screenshotFileName);
-
-        // Capture screenshot
-        Screenshot screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-        screenshot.SaveAsFile(screenshotPath);
-
-        return screenshotPath;
+        }
+        catch (AssertionException ex)
+        {
+            Test.Log(Status.Fail, $"Assertion failed: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Test.Log(Status.Fail, $"Error occurred: {ex.Message}");
+            Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
+                .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
+            throw;
+        }
     }
 }

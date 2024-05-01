@@ -10,11 +10,13 @@ public class ToDoPage : BasePage
 
     private IWebElement _newToDo => WaitHelper.WaitUntilElementExists(_driver, By.ClassName("new-todo"));
 
-    //TODO - change xpath to relative
-    private IWebElement _completedTab => WaitHelper.WaitUntilElementExists(_driver, By.XPath("//*[@id=\"root\"]/footer/ul/li[3]/a"));
+    private IWebElement _activeTab => WaitHelper.WaitUntilElementExists(_driver, By.XPath("*//a[text()='Active']"));
+
+    private IWebElement _completedTab => WaitHelper.WaitUntilElementExists(_driver, By.XPath("*//a[text()='Completed']"));
     private IWebElement _allTab => WaitHelper.WaitUntilElementExists(_driver, By.XPath("*//a[text()='All']"));
 
     private IWebElement _clearCompletedButton => WaitHelper.WaitUntilElementExists(_driver, By.ClassName("clear-completed"));
+    private IWebElement _toDoCountLabel => WaitHelper.WaitUntilElementExists(_driver, By.ClassName("todo-count"));
 
     private IList<IWebElement> _toDoList => WaitHelper.WaitUntilElementListExists(_driver, By.XPath("//label[@data-testid='todo-item-label']")); 
 
@@ -23,6 +25,10 @@ public class ToDoPage : BasePage
         _driver = driver;
     }
 
+    /// <summary>
+    /// Add New ToDos.
+    /// </summary>
+    /// <param name="todo">To do list to create</param>
     public void AddNewToDos(IList<string> todo)
      { 
         foreach(var todoItem in todo)
@@ -32,6 +38,10 @@ public class ToDoPage : BasePage
         }
     }
 
+    /// <summary>
+    /// Get All To Dos in the selected tab.
+    /// </summary>
+    /// <returns></returns>
     public IList<string> GetAvailableToDoListInSelectedTab()
     {
         if (!_toDoList.Any())
@@ -43,6 +53,11 @@ public class ToDoPage : BasePage
 
     //complete todos 
     // TODO: check already completed
+    /// <summary>
+    /// Change the status of To Dos by toggling. 
+    /// </summary>
+    /// <param name="todo"></param>
+    /// <returns></returns>
     public IList<string> ToggleToDos(IList<string> todo)
     {
         var selectedToDo = new List<string>();
@@ -67,21 +82,43 @@ public class ToDoPage : BasePage
         return selectedToDo;
     }
 
+    /// <summary>
+    /// Navigate to "All" tab.
+    /// </summary>
     public void ClickAllTab()
     {
         _allTab.Click();
     }
 
+    /// <summary>
+    /// Navigate to "Complete" tab.
+    /// </summary>
     public void ClickCompletedTab()
     {  
       _completedTab.Click();
     }
 
+    /// <summary>
+    /// Navigate to "Active" tab.
+    /// </summary>
+    public void ClickActiveTab()
+    {
+        _activeTab.Click();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public void CickClearCompleted()
     {
         _clearCompletedButton.Click();
     }
 
+    /// <summary>
+    /// Edit a specific To Do.
+    /// </summary>
+    /// <param name="selectedTodoToEdit"></param>
+    /// <param name="newTodoValue"></param>
     public void EditSelectedToDo(string selectedTodoToEdit, string newTodoValue)
     {
         Actions actions = new Actions(_driver);
@@ -99,9 +136,23 @@ public class ToDoPage : BasePage
         selectedInputToEdit.SendKeys(Keys.Enter);
     }
 
+    /// <summary>
+    /// Change status of To Dos in the selected tab.
+    /// </summary>
     public void ChangeToDoStatusInSelectedTab()
     {
         var allCompletedToDo = GetAvailableToDoListInSelectedTab();
         ToggleToDos(allCompletedToDo);
+    }
+
+    /// <summary>
+    /// Get all Active To Dos count.
+    /// </summary>
+    /// <returns></returns>
+    public int GetActiveToDosCount()
+    {
+        var countText = _toDoCountLabel.Text.Replace(" items left!", string.Empty);
+        int.TryParse(countText, out var count);
+        return count;
     }
 }
