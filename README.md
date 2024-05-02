@@ -29,15 +29,18 @@ dotnet test
 2. Go to Test --> Run All Tests.
 
 ## Test Results Report and Log
-### Report
+### Report - Folder path (ToDoMVC/TestResults/extent-report.html)
 #### Option 01 - Detailed Report - Graph View
-
+![image](https://github.com/Nike-KG/ToDoMVC_Automation/assets/134206700/0b7840b1-19de-409e-b9bb-68c9f517fc9f)
 
 #### Option 02 - Detailed Report - Detailed View
-
+![image](https://github.com/Nike-KG/ToDoMVC_Automation/assets/134206700/3c46d9a3-ca8f-40cf-993f-b308e14c92de)
 
 ### Log
+![image](https://github.com/Nike-KG/ToDoMVC_Automation/assets/134206700/be36cf96-e5f9-4d34-a778-147cf7042ba3)
 
 
-### Test Scenarios
+
+### Test Scenarios (ToDoMVC/Testscenarios/Test Scenarios_ToDoMVC.xlsx)
 Test Scenarios document can be found in "Test Scenarios" folder in the project.
+![image](https://github.com/Nike-KG/ToDoMVC_Automation/assets/134206700/2dfcb687-8815-45fc-b244-0fa5c7e641b9)
