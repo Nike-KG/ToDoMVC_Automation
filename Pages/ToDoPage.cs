@@ -28,7 +28,7 @@ public class ToDoPage : BasePage
     /// <summary>
     /// Add New ToDos.
     /// </summary>
-    /// <param name="todo">To do list to create</param>
+    /// <param name="todo">ToDo list to create</param>
     public void AddNewToDos(IList<string> todo)
      { 
         foreach(var todoItem in todo)
@@ -39,7 +39,7 @@ public class ToDoPage : BasePage
     }
 
     /// <summary>
-    /// Get All To Dos in the selected tab.
+    /// Get All ToDos in the selected tab.
     /// </summary>
     /// <returns></returns>
     public IList<string> GetAvailableToDoListInSelectedTab()
@@ -51,12 +51,10 @@ public class ToDoPage : BasePage
         return _toDoList.Select(x => x.Text).ToList();
     }
 
-    //complete todos 
-    // TODO: check already completed
     /// <summary>
-    /// Change the status of To Dos by toggling. 
+    /// Change the status of ToDos by toggling. 
     /// </summary>
-    /// <param name="todo"></param>
+    /// <param name="todo">ToDo list to create</param>
     /// <returns></returns>
     public IList<string> ToggleToDos(IList<string> todo)
     {
@@ -107,7 +105,7 @@ public class ToDoPage : BasePage
     }
 
     /// <summary>
-    /// 
+    /// Click "Clear Completed" button.
     /// </summary>
     public void CickClearCompleted()
     {
@@ -115,10 +113,10 @@ public class ToDoPage : BasePage
     }
 
     /// <summary>
-    /// Edit a specific To Do.
+    /// Edit a specific ToDo.
     /// </summary>
-    /// <param name="selectedTodoToEdit"></param>
-    /// <param name="newTodoValue"></param>
+    /// <param name="selectedTodoToEdit"> ToDo list to edit.</param>
+    /// <param name="newTodoValue">new value to update.</param>
     public void EditSelectedToDo(string selectedTodoToEdit, string newTodoValue)
     {
         Actions actions = new Actions(_driver);
@@ -137,7 +135,7 @@ public class ToDoPage : BasePage
     }
 
     /// <summary>
-    /// Change status of To Dos in the selected tab.
+    /// Change status of ToDos in the selected tab.
     /// </summary>
     public void ChangeToDoStatusInSelectedTab()
     {
@@ -146,7 +144,7 @@ public class ToDoPage : BasePage
     }
 
     /// <summary>
-    /// Get all Active To Dos count.
+    /// Get all Active ToDos count.
     /// </summary>
     /// <returns></returns>
     public int GetActiveToDosCount()

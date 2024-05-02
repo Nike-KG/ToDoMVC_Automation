@@ -11,7 +11,7 @@ public class ToDosTest : BaseTests
 
     public ToDosTest()
     {
-        //Initializing the pages
+        //Initializing the pages.
         _toDoPage = new ToDoPage(Driver);
     }
 
@@ -77,7 +77,7 @@ public class ToDosTest : BaseTests
 
             //Assert
             Assert.That(toDoText, Is.EqualTo(result));
-            Test.Log(Status.Pass, "Successfully added to dos.");
+            Test.Log(Status.Pass, "ToDos added successfully.");
             Test.Log(Status.Info, $"Added ToDos: <br>{string.Join("<br>", result)}");
             Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
                 .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
@@ -116,7 +116,7 @@ public class ToDosTest : BaseTests
 
             //Assert
             Assert.That(toDoListToToggle.Count, Is.EqualTo(result.Count));
-            Test.Log(Status.Pass, "Successfully completed to dos.");
+            Test.Log(Status.Pass, "ToDos completed successfully .");
             Test.Log(Status.Info, $"Completed ToDos: <br>{string.Join("<br>", result)}");
             Test.Log(Status.Info, $"Completed ToDos Count: {result.Count}");
             Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
@@ -158,7 +158,7 @@ public class ToDosTest : BaseTests
 
             // Assert
             Assert.That(toDoListToToggle.Count, Is.EqualTo(result.Count));
-            Test.Log(Status.Pass, "Successfully verified completed to dos in completed tab.");
+            Test.Log(Status.Pass, "Successfully verified completed ToDos in completed tab.");
             Test.Log(Status.Info, $"Completed ToDos: <br>{string.Join("<br>", result)}");
             Test.Log(Status.Info, $"Completed ToDos Count: {result.Count}");
             Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
@@ -176,15 +176,13 @@ public class ToDosTest : BaseTests
                 .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
             throw;
         }
-
-
     }
 
     /// <summary>
     /// Verify Edit function.
     /// </summary>
     [Test, Order(5)]
-    public void VerifyEditFuction()
+    public void VerifyEditFunction()
     {
         // Arrange.
         var selectedToDo = "Pay Bills";
@@ -199,7 +197,7 @@ public class ToDosTest : BaseTests
 
             // Assert. 
             Assert.That(result.Count(x => x == newToDoValue), Is.EqualTo(1));
-            Test.Log(Status.Pass, "Successfully Edited.");
+            Test.Log(Status.Pass, "ToDo edited successfully.");
             Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
                 .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
@@ -298,7 +296,7 @@ public class ToDosTest : BaseTests
     }
 
     /// <summary>
-    /// Negative Scenario - Verify "Clear Completed" button clear Active ToDos.
+    /// Negative Scenario - Verify "Clear Completed" button clear Active ToDos as well.
     /// </summary>
     [Test, Order(8)]
     public void VerifyClearCompletedButtonIfClearActiveToDos()
@@ -317,7 +315,7 @@ public class ToDosTest : BaseTests
 
             // Assert
             Assert.That(beforeCount, Is.EqualTo(afterCount));
-            Test.Log(Status.Pass, "Active ToDos are not cleared.");
+            Test.Log(Status.Pass, "Active ToDos were not cleared.");
             Test.Log(Status.Info, "Screenshot", MediaEntityBuilder
                 .CreateScreenCaptureFromPath(TestReportHelper.CaptureScreenshot(ScreenshotFolderPath, Driver)).Build());
 
