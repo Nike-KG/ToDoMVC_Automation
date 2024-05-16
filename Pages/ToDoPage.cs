@@ -20,6 +20,7 @@ public class ToDoPage : BasePage
 
     private IList<IWebElement> _toDoList => WaitHelper.WaitUntilElementListExists(_driver, By.XPath("//label[@data-testid='todo-item-label']")); 
 
+    private IWebElement GetToDoItemByLabelText(string labelText) => WaitHelper.WaitUntilElementExists(_driver, By.XPath($"//label[text()='{labelText}']/preceding-sibling::input[@type='checkbox']"));
     public ToDoPage(WebDriver driver) : base(driver) { 
     
         _driver = driver;
@@ -66,9 +67,7 @@ public class ToDoPage : BasePage
 
         foreach (var todoItem in todo)
         {
-            var toDoToggle = WaitHelper
-                .WaitUntilElementExists(_driver,
-                By.XPath($"//label[text()='{todoItem}']/preceding-sibling::input[@type='checkbox']"));
+            var toDoToggle = GetToDoItemByLabelText(todoItem);
 
             if (toDoToggle != null)
             {

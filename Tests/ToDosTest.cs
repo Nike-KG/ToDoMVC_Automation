@@ -4,7 +4,7 @@ using TodoMVC.Utilities;
 
 namespace TodoMVC.Tests;
 
-[TestFixture(TestName = "ToDo App")]
+[TestFixture(TestName = "ToDo App"), Category("Functional")]
 public class ToDosTest : BaseTests
 {
     private ToDoPage _toDoPage;
